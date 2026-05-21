@@ -1,0 +1,39 @@
+---
+title: "CV"
+output: html_document
+---
+
+# Profiel
+
+Gemotiveerde Life Sciences student met interesse in bioinformatica,
+RNA-sequencing en data-analyse.
+
+# Opleiding
+
+## HBO Life Sciences
+Hogeschool ...
+2021 – heden
+
+# Skills
+
+- RStudio
+- R Markdown
+- DESeq2
+- PCA analyse
+- RNA-seq analyse
+- FastQC
+- FeatureCounts
+- Data visualisatie
+- Excel
+- Teamwork
+- Probleemoplossend denken
+
+# Werkervaring
+
+## Transactional opperator
+2025 – heden
+
+
+# stageplek solicitatie 
+# skills benoemen - datascience for biology skills
+# geen persoonsgegevens

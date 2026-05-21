@@ -1,0 +1,15 @@
+---
+title: "Plan_voor_toekomst"
+output: html_document
+---
+
+Tijdens mijn studie heb ik interesse gekregen in data science en bio-informatica. Over één à twee jaar zou ik graag willen werken binnen een organisatie waar data-analyse een belangrijke rol speelt, bijvoorbeeld binnen een data science bedrijf, onderzoeksinstelling of een biologisch/life science georiënteerd bedrijf. Mijn ideale baan zou een functie zijn waarin ik kan helpen met het verwerken, analyseren en visualiseren van datasets om informatie en inzichten uit data te halen.
+
+Op dit moment heb ik door de minor Data Science for Biology een basis ontwikkeld in verschillende data science vaardigheden. Ik heb ervaring opgedaan met programmeertalen zoals R, het werken met datasets, data visualisatie, reproduceerbaar werken met RMarkdown, versiebeheer met Git en GitHub en basiskennis van SQL. Daarnaast heb ik geleerd hoe belangrijk gestructureerd werken, documentatie en reproduceerbaarheid zijn binnen data science projecten.
+
+Hoewel ik nog aan het begin van mijn ontwikkeling sta, denk ik dat deze vaardigheden een goede basis vormen om later mee te kunnen werken aan data science projecten binnen een professioneel team. Ik merk vooral dat ik het interessant vind om met data te werken en om analyses overzichtelijk en reproduceerbaar uit te voeren.
+
+In de toekomst zou ik mij verder willen ontwikkelen in meer geavanceerde data science technieken. Denk hierbij aan machine learning, statistische modellering, het werken met grotere databases en het analyseren van biologische datasets zoals sequencing data. Daarnaast lijkt het mij waardevol om mijn programmeervaardigheden verder uit te breiden en meer ervaring op te doen met samenwerken binnen grotere projecten.
+
+Door deze skills verder te ontwikkelen hoop ik uiteindelijk een rol te kunnen vervullen waarin ik data science kan combineren met biologie en onderzoek.
+
