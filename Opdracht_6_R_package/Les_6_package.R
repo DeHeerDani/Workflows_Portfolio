@@ -1,6 +1,5 @@
 # workflowtools
   
-
 # Doel is om:
 # data opschonen
 # NA’s tellen

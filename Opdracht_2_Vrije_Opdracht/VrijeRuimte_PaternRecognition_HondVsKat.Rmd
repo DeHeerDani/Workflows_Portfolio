@@ -1,0 +1,167 @@
+---
+title: "VrijeRuimte_PaternRecognition_HondVsKat"
+output: html_document
+---
+
+# Vrije Opdracht Toepassing
+# Honden VS Katten herkenning
+
+In deze opdracht bouw ik een convolutional neural network (CNN) om katten en honden te classificeren op basis van dataset aan afbeeldingen.
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(keras3)
+library(tensorflow)
+library(reticulate)
+library(jpeg)
+library(grid)
+```
+
+```{r}
+# hier zorg ik er voor dat alle onbruikbare/verouderde afbeeldingen worden opgeschoont.
+dataset_path <- "/home/dani.pfeijffer/Workflows/Workflows_Portfolio/Opdracht_2_Vrije_Opdracht/Data/Training"
+
+files <- list.files(dataset_path, recursive = TRUE, full.names = TRUE)
+
+bad_files <- c()
+
+for (f in files) {
+  img <- try(readJPEG(f), silent = TRUE)
+  if (inherits(img, "try-error")) {
+    bad_files <- c(bad_files, f)
+  }
+}
+
+if (length(bad_files) > 0) {
+  file.remove(bad_files)
+}
+```
+
+
+```{r}
+# Het dataset maken
+
+train_ds <- image_dataset_from_directory(
+  dataset_path,
+  image_size = c(64, 64),
+  batch_size = 32,
+  validation_split = 0.2,
+  subset = "training",
+  seed = 123
+)
+
+val_ds <- image_dataset_from_directory(
+  dataset_path,
+  image_size = c(64, 64),
+  batch_size = 32,
+  validation_split = 0.2,
+  subset = "validation",
+  seed = 123
+)
+```
+
+```{r}
+# visualisatie van de data/afbeeldingen
+
+iterator <- as_iterator(train_ds)
+batch <- reticulate::iter_next(iterator)
+
+images <- batch[[1]]
+labels <- batch[[2]]
+
+par(mfrow = c(3,3))
+
+for (i in 1:9) {
+  img <- images[i,,,]
+  plot(as.raster(img / 255))
+  title(main = ifelse(labels[i] == 0, "Cat", "Dog"))}
+```
+
+
+```{r}
+# Het maaken van de modellen
+
+model <- keras_model_sequential() %>%
+  layer_rescaling(scale = 1/255, input_shape = c(64, 64, 3)) %>%
+  layer_conv_2d(filters = 32, kernel_size = 3, activation = "relu") %>%
+  layer_max_pooling_2d() %>%
+  layer_conv_2d(filters = 64, kernel_size = 3, activation = "relu") %>%
+  layer_max_pooling_2d() %>%
+  layer_flatten() %>%
+  layer_dense(units = 64, activation = "relu") %>%
+  layer_dense(units = 1, activation = "sigmoid")
+
+summary(model)
+```
+
+```{r}
+model %>% compile(
+  optimizer = "adam",
+  loss = "binary_crossentropy",
+  metrics = c("accuracy"))
+
+model %>% fit(train_ds, validation_data = val_ds, epochs = 5, verbose = 2)
+```
+
+
+```{r}
+# nu we het model getraint hebben gaan we kijken naar de tsest data set. en wat de accuracy/loss daarvan is.
+score <- model %>% evaluate(val_ds, verbose = 0)
+
+cat("Validation loss:", score[["loss"]], "\n")
+cat("Validation accuracy:", score[["accuracy"]], "\n")
+```
+
+
+```{r}
+# voorspelling doen met een afbeelding waarbij dichter bij de 1 de hond is en 0 de kat
+predictions <- model %>% predict(val_ds)
+
+predictions[1, ]
+
+predicted_label <- ifelse(predictions[1, ] > 0.5, 1, 0)
+predicted_label
+
+```
+
+
+```{r}
+#visualisatie van de voorspellingen.
+
+iterator <- as_iterator(val_ds)
+batch <- reticulate::iter_next(iterator)
+
+images <- batch[[1]]
+labels <- batch[[2]]
+
+predictions <- model %>% predict(images[1,,, drop = FALSE])
+predictions
+predicted_label <- ifelse(predictions[1, ] > 0.5, 1, 0)
+predicted_label
+
+par(mfrow = c(3,3), mar = c(1,1,2,1))
+
+iterator <- as_iterator(val_ds)
+batch <- reticulate::iter_next(iterator)
+
+images <- batch[[1]]
+labels <- batch[[2]]
+
+predictions <- model %>% predict(images)
+
+for (i in 1:9) {
+  img <- images[i,,,]
+  pred_value <- predictions[i, 1]
+  pred_label <- ifelse(pred_value > 0.5, 1, 0)
+  true_label <- as.numeric(labels[i])
+  col <- ifelse(pred_label == true_label, "darkgreen", "red")
+  plot(as.raster(img / 255))
+  title(
+    main = paste0(
+      ifelse(pred_label == 1, "Dog", "Cat"),
+      " (", round(pred_value, 2), ")"
+    ),
+    col.main = col
+  )
+}
+```

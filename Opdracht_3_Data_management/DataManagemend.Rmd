@@ -1,0 +1,20 @@
+---
+title: "DataManagemend"
+output: html_document
+---
+
+## Mapstructuur van R
+
+![Mapstructuur](mapstructuurR.png)
+
+
+## README van R
+
+![README](READMER.png)
+
+## README van Github
+
+![READMEPortfolio](PortfolioREADME.png)
+
+De mapstructuur van de Github zelf is niet te doen vanwegen de grote dataset die ik heb gedownload met te veel afbeeldingen.
+

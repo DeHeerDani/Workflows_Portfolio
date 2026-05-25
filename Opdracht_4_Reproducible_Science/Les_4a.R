@@ -117,8 +117,6 @@ ggplot(plot_data, aes(
 # Deze controles zijn belangrijk om te kunnen zien of verschillen echt door de chemicaliën komen en niet door andere factoren.
 # De data is genormaliseerd door alles te delen door het gemiddelde van de negatieve controle. Daardoor wordt de negatieve controle gelijk aan 1. Andere waarden zijn dan relatief ten opzichte hiervan. Dit maakt het makkelijker om de effecten van verschillende stoffen met elkaar te vergelijken.
 
-
-
 ## vervolgonderzoek.
 # 1. Laad het benodigde package: library(drc),
 # 2. Gebruik de dataset zonder nul-concentraties en met genormaliseerde waarden.
