@@ -1,0 +1,207 @@
+# data preprocessing van images
+# image classification model in Keras
+# verschil tussen datasets
+# model generalization
+
+
+
+install.packages("reticulate")
+install.packages("tensorflow")
+install.packages("keras3")
+
+library(reticulate)
+
+reticulate::install_python()
+reticulate::py_install("tensorflow")
+
+library(reticulate)
+py_config()
+
+library(tensorflow)
+
+library(keras3)
+
+# data downloaden
+
+fashion_mnist <- dataset_fashion_mnist()
+
+c(train_images, train_labels) %<-% fashion_mnist$train
+c(test_images, test_labels) %<-% fashion_mnist$test
+
+# Vector maken met namen van verschillende klassificaties
+
+class_names = c('T-shirt/top',
+                'Trouser',
+                'Pullover',
+                'Dress',
+                'Coat',
+                'Sandal',
+                'Shirt',
+                'Sneaker',
+                'Bag',
+                'Ankle boot')
+
+
+dim(train_images)
+
+dim(train_labels)
+
+train_labels[1:20]
+
+dim(test_images)
+
+dim(test_labels)
+
+
+
+library(tidyr)
+library(ggplot2)
+
+image_1 <- as.data.frame(train_images[1, , ])
+colnames(image_1) <- seq_len(ncol(image_1))
+image_1$y <- seq_len(nrow(image_1))
+image_1 <- gather(image_1, "x", "value", -y)
+image_1$x <- as.integer(image_1$x)
+
+ggplot(image_1, aes(x = x, y = y, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "black", na.value = NA) +
+  scale_y_reverse() +
+  theme_minimal() +
+  theme(panel.grid = element_blank())   +
+  theme(aspect.ratio = 1) +
+  xlab("") +
+  ylab("")
+
+# schaal pixelwaarden tussen 0 en 1
+train_images <- train_images / 255
+test_images <- test_images / 255
+
+
+par(mfcol=c(5,5))
+par(mar=c(0, 0, 1.5, 0), xaxs='i', yaxs='i')
+for (i in 1:25) {
+  img <- train_images[i, , ]
+  img <- t(apply(img, 2, rev))
+  image(1:28, 1:28, img, col = gray((0:255)/255), xaxt = 'n', yaxt = 'n',
+        main = paste(class_names[train_labels[i] + 1]))
+}
+
+
+# Bouw een netwerkmodel met meerdere lagen voor image clasificatie
+model <- keras_model_sequential()
+model %>%
+  layer_flatten(input_shape = c(28, 28)) %>%
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dense(units = 10, activation = 'softmax')
+
+# Kijken hoe de neurale netwerk is gemaakt.
+summary(model)
+
+# leerproces van de model instellen (zoals bepalen wat fout is, en hoe de prestaties worden gemeten).
+model %>% compile(
+  optimizer = 'adam',
+  loss = 'sparse_categorical_crossentropy',
+  metrics = c('accuracy')
+)
+
+# met deze code word het trainen van de model gestart.
+# je voedt het model met de data van train_images en train_labels arrays.
+# epochs hier staat voor de hoeveelheid keren dat het model de data opnieuw leert. hier is gekozen voor een epoch van 5.
+# het voordeel van een hogere epoch is dat het model acurater word. maar als je een te hoge epoch hebt dan leert het model te specifiek waardoor je het eigenlijk traint om de test data te herkennen ten opzichte van nieuwe data.
+# een te lage epoch is natuurlijk ook niet goed omdat je model dan hellemaal niet specifiek word voor het gene wat je wilt identificeren.
+# het model kijkt naar hoe acuraat het is en hoe fout het is. dit word gedaan door de statistiek accuracy en loss respectievelijk.
+# accuracy voor het model is hoe goed het model is om een plaatje te herkennen uitgedrukt in procenten.
+# loss voor het model is hoe ver van het goede antwoord vandaan zit. dus eigenlijk hoe groot de fout is. uitgedrukt in procentn.
+model %>% fit(train_images, train_labels, epochs = 5, verbose = 2)
+
+# nu we het model getraint hebben gaan we kijken naar de tsest data set. en wat de accuracy/loss daarvan is.
+score <- model %>% evaluate(test_images, test_labels, verbose = 0)
+
+
+cat("Test loss:", score[["loss"]], "\n")
+cat("Test accuracy:", score[["accuracy"]], "\n")
+
+
+# nu we een getrained model hebben en de acuratie/loss hebben verkregen kunnen we een voorspellingen doen met test data.
+# deze  code gaat langs alle test afbeeldingen en geeft voor elke afbeelding 10 keer een 10 cijferig getal van 0 tot 1.
+# voor elke optie van de afbeelding geeft hij een cijfer wat de confidence weer geeft. hoe hoger het cijfer bij de 1 is hoe zekerder de model is dat dat is wat de afbeelding is.
+predictions <- model %>% predict(test_images)   
+     
+
+# na alle voorspellingen te hebben gedaan word hier gekeken naar de voorspellingen van de eerste afbeelding. voor elke mogelijke optie word een confidence cijfer gegeven.
+predictions[1, ]
+
+# om te zien welke label het hoogste confidence heeft word de which.max gebruikt. en hieruit is te zien dat positie 10 de hoogste confidence heeft
+which.max(predictions[1, ])
+
+# met test_abels[1] word gekeken welk label de eerste afbeelding heeft. en hieruit komt 9, wat correleert met ankle boot uit de class_names array.
+# class_names <- c(
+#  'T-shirt/top',  # 0
+#  'Trouser',      # 1
+#  'Pullover',     # 2
+#  'Dress',        # 3
+#  'Coat',         # 4
+#  'Sandal',       # 5
+#  'Shirt',        # 6
+#  'Sneaker',      # 7
+#  'Bag',          # 8
+#  'Ankle boot'    # 9
+#)
+test_labels[1]
+
+
+# Hier worden 25 afbeeldingen geprint met daarboven de voorspelling van het model in het groen als dit correct was en in het rood als hij het mis had.
+# ook word hier gecorigeerd voor de vector positie van class_names, angezien vectors altijd beginnen met positie 0. door de which.max te corrigeren met -1 komt hier de correcte label naam uit met de hoogste confidence.
+par(mfcol=c(5,5))
+par(mar=c(0, 0, 1.5, 0), xaxs='i', yaxs='i')
+for (i in 1:25) {
+  img <- test_images[i, , ]
+  img <- t(apply(img, 2, rev))
+  # subtract 1 as labels go from 0 to 9
+  predicted_label <- which.max(predictions[i, ]) - 1
+  true_label <- test_labels[i]
+  if (predicted_label == true_label) {
+    color <- '#008800'
+  } else {
+    color <- '#bb0000'
+  }
+  image(1:28, 1:28, img, col = gray((0:255)/255), xaxt = 'n', yaxt = 'n',
+        main = paste0(class_names[predicted_label + 1], " (",
+                      class_names[true_label + 1], ")"),
+        col.main = color)
+}
+
+
+# We kunnen ook selecteren op 1 afbeelding tegelijk.
+# hiervoor moet wel gelet worden op de dimensies die nodig zijn voor het model. het model verwacht een 3d model namelijk.
+# 'drop = FALSE' behoud de batch dimensie waardoor de afbeelding niet 'plat' word als het ware.
+img1 <- test_images[1, , , drop = FALSE]
+img34 <- test_images[34, , , drop = FALSE]
+img77 <- test_images[77, , , drop = FALSE]
+
+# met dim(img) zie je dat je 1,28,28 krijgt. waarbij de 1 de afbeelding is, en beide 28 staan voor de hoogte en breedte van de afbeelding.
+dim(img1)
+dim(img34)
+dim(img77)
+
+# hier word de voorspelling gemaakt voor afbeelding 1 in de variabel predictions
+predictions <- model %>% predict(img1)
+
+# vervolgens kan je hiermee de voorspellingen per label zien.
+prediction <- predictions[1, ]
+prediction
+
+# en met de which.max() -1, krijg je gelijk de juiste label nummer terug die hoort bij de afbeelding.
+which.max(predictions[1, ]) - 1
+
+
+
+
+
+
+
+
+
+
+
