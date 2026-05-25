@@ -1,0 +1,10 @@
+---
+title: "Mijn Portfolio"
+site: bookdown::bookdown_site
+output: bookdown::html_document2
+bibliography: references.bib
+---
+
+Welkom bij mijn portfolio.
+Dit project bevat meerdere analises in R.
+

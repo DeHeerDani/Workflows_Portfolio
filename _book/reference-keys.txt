@@ -1,0 +1,16 @@
+profiel
+opleiding
+hbo-life-sciences
+skills
+werkervaring
+transactional-opperator
+stageplek-solicitatie
+skills-benoemen---datascience-for-biology-skills
+geen-persoonsgegevens
+mapstructuur-van-r
+readme-van-r
+readme-van-github
+maak-een-scatter-plot-voor-de-verschillende-chemicaliën-en-concentraties
+uitleg-van-de-analyse
+vervolgonderzoek.
+simpele-package-voor-data-opschoning-en-visualisati

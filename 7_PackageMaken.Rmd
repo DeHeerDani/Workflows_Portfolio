@@ -1,0 +1,11 @@
+
+# Simpele package voor data opschoning en visualisati
+De commands die gebruikt kunnen worden zijn:
+basic_summary(df) → geeft summary() van je dataset
+clean_data(df) → verwijdert rijen met NA’s (na.omit)
+na_count(x) → telt hoeveel NA’s er in een vector zitten
+quick_plot(df, x, y) → maakt snel een scatterplot met ggplot2
+
+de package staat op deze github pagina.
+https://github.com/DeHeerDani/MijnRPackage
+

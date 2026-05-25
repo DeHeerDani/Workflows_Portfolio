@@ -1,0 +1,208 @@
+
+
+```{r, include=FALSE}
+library(readxl)
+library(ggplot2)
+library(remotes)
+library(NBZIMM)
+```
+
+
+```{r, eval=FALSE}
+# run de install.packages maar 1 keer in de console
+install.packages("remotes")
+remotes::install_github("nyiuab/NBZIMM")
+```
+
+
+```{r}
+# Lees de data in in R met het readxl package.
+
+data <- read_excel("~/Workflows/Workflows_Portfolio/Opdracht_4_Reproducible_Science/CE.LIQ.FLOW.062_Tidydata.xlsx")
+# View(data)
+```
+
+
+```{r}
+# Inspecteer de data. Is de data goed ingelezen? Kloppen de data types voor rawData, compName en compConcentration?
+
+## RawData hoort numeriek te zijn
+## compName hoort tekst/factor te zijn
+## compConcentration hoort numeriek of factor te zijn afhankelijk van de analyse
+
+class(data$RawData)
+class(data$compName)
+class(data$compConcentration)
+
+unique(data$compConcentration)
+
+# er zit nog een komma in een van de datapunten.
+
+data$compConcentration <- gsub(",", ".", data$compConcentration)
+
+# komma veranderen voor .
+
+data$compConcentration <- as.numeric(data$compConcentration)
+# numeriek van maken
+```
+
+# Maak een scatter plot voor de verschillende chemicaliën en concentraties:
+Geef de compConcentration weer op de x-as. Zorg ervoor dat de labels op de x-as leesbaar zijn!
+Geef de RawData weer op de y-as.
+Visualiseer de verschillende chemicaliën met verschillende kleuren.
+Gebruik verschillende symbolen (shape =) voor de expType variabele.
+Controleer of de volgorde op de x-as klopt. Pas zonodig het data type van compConcentration aan.
+Gebruik een log10-transformatie om de x-variabele beter weer te geven.
+Voeg jitter aan de punten toe om te voorkomen dat punten overlappen.
+
+```{r}
+ggplot(data, aes(
+  x = compConcentration,
+  y = RawData,
+  color = compName,
+  shape = expType
+)) +
+  geom_jitter(width = 0.05, height = 0) +
+  scale_x_log10() +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  labs(
+    title = "Scatter plot van chemicaliën en concentraties",
+    x = "Concentratie",
+    y = "RawData"
+  )
+
+# Voor de log10-transformatie zijn meetwaarden met concentratie 0 verwijderd uit de plot, omdat een logaritmische transformatie van 0 niet mogelijk is.
+# Normaliseer de data voor de negatieve controle (controlNegative). 
+# Zorg ervoor dat de gemiddelde waarde voor de negatieve controle gelijk is aan 1 en dat alle andere meetwaarden zijn uitgedrukt als een fractie daarvan. 
+```
+
+
+```{r}
+# Maak een nieuwe scatter plot met de genormaliseerde waarden.
+# gemiddelde negatieve controle
+neg_mean <- mean(
+  data$RawData[data$expType == "controlNegative"],
+  na.rm = TRUE
+)
+
+# nieuwe tabel maken met genormliseerde data
+data$NormalizedData <- data$RawData / neg_mean
+```
+
+
+```{r}
+plot_data <- subset(data, compConcentration > 0)
+
+ggplot(plot_data, aes(
+  x = compConcentration,
+  y = NormalizedData,
+  color = compName,
+  shape = expType
+)) +
+  geom_jitter(width = 0.05, height = 0) +
+  scale_x_log10() +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  labs(
+    title = "Genormaliseerde scatter plot",
+    x = "Concentratie",
+    y = "Genormaliseerde RawData"
+  )
+```
+
+De data werd genormaliseerd door alle meetwaarden te delen door het gemiddelde van de negatieve controle (controlNegative). 
+Hierdoor werd de gemiddelde waarde van de negatieve controle gelijk aan 1 en konden andere meetwaarden als relatieve fractie van de controle worden weergegeven. 
+Dit maakt vergelijking tussen experimentele condities eenvoudiger.
+
+# Uitleg van de analyse
+De negatieve controle (controlNegative) is de situatie zonder werkzame stof. Dit laat zien wat de normale waarde is van het aantal nakomelingen.
+De positieve controle is een behandeling waarvan al bekend is dat die effect heeft. 
+Hiermee check je of het experiment goed werkt.
+De vehicle controle is alleen het oplosmiddel zonder stof, om te kijken of dat zelf invloed heeft op de resultaten.
+Deze controles zijn belangrijk om te kunnen zien of verschillen echt door de chemicaliën komen en niet door andere factoren.
+De data is genormaliseerd door alles te delen door het gemiddelde van de negatieve controle. Daardoor wordt de negatieve controle gelijk aan 1. Andere waarden zijn dan relatief ten opzichte hiervan. Dit maakt het makkelijker om de effecten van verschillende stoffen met elkaar te vergelijken.
+
+# vervolgonderzoek.
+1. Laad het benodigde package: library(drc),
+2. Gebruik de dataset zonder nul-concentraties en met genormaliseerde waarden.
+3. Maak een log-logistisch model.
+4. Bekijk de resultaten.
+5. Bepaal de IC50 waarde.
+6. Maak een plot van de dose-response curve.
+
+
+
+
+#4B
+
+gebruikte artikel:
+website link: https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0242073
+github link: https://github.com/nyiuab/NBZIMM/blob/master/tutorial/nbmms.md
+
+
+#onderzoeksvraag
+Hoe kunnen we microbiome veranderingen over tijd goed modelleren met een statistisch model dat rekening houdt met veel nullen en herhaalde metingen?
+
+#korte samenvatting methode en resultaten.
+Dit artikel onderzoekt hoe je longitudinale microbiome data het beste kunt analyseren. 
+De onderzoeksvraag is hoe je zero-inflated en tijdsafhankelijke microbiome data statistisch goed kunt modelleren. 
+Hiervoor ontwikkelen de auteurs een zero-inflated Gaussian mixed model (ZIGMM) met een EM-algoritme. 
+Uit simulaties en echte datasets blijkt dat dit model beter presteert dan bestaande methoden zoals LMM en NBMM. 
+De conclusie is dat ZIGMM efficiënter en robuuster is voor complexe microbiome data met veel nullen en herhaalde metingen.
+
+Voor deze opdracht heb ik het artikel van PLOS ONE gebruikt over het NBZIMM model voor microbiome data. 
+In het artikel wordt duidelijk uitgelegd wat het doel van het onderzoek is. 
+De onderzoekers wilden een statistisch model ontwikkelen voor het analyseren van longitudinale microbiome data, waarbij rekening wordt gehouden met dingen zoals verschillen tussen metingen over tijd en variatie in sequencing data.
+Het artikel bevat ook een data availability statement waarin wordt uitgelegd waar de data en code beschikbaar zijn. De R code en datasets zijn gedeeld via GitHub, waardoor andere onderzoekers de analyses kunnen proberen te reproduceren. De gebruikte code en data waren beschikbaar via de GitHub repository van NBZIMM. 
+Ook werd in het artikel beschreven waar de gebruikte data vandaan kwamen en dat het ging om microbiome studies met menselijke proefpersonen.
+Verder bevat het artikel professionele contactinformatie van de auteurs en affiliaties van universiteiten en onderzoeksinstellingen. Ook waren er secties aanwezig voor ethiek en funding. 
+Hierin werd aangegeven dat er rekening is gehouden met ethische aspecten van het onderzoek en dat het onderzoek financiële ondersteuning heeft gekregen.
+De code beschikbaarheid van het artikel was goed, omdat zowel de R package als voorbeeldcode openbaar beschikbaar waren. 
+Tijdens het reproduceren van de analyse liep ik wel tegen een probleem aan omdat de NBZIMM package niet meer direct via CRAN geïnstalleerd kon worden met mijn huidige versie van R. 
+Dit kon worden opgelost door de package via GitHub te installeren. 
+Daarna werkte de code succesvol en kon ik een deel van de analyse reproduceren. 
+Hierdoor beoordeel ik de reproduceerbaarheid van het artikel als goed, al waren er wel kleine technische problemen tijdens het installeren van de package.
+
+```{r}
+# werkt niet oorsronkelijk
+# install.packages("NBZIMM")
+
+data(Romero)
+
+otu = Romero$OTU
+sam = Romero$SampleData
+
+N = sam[, "Total.Read.Counts"]
+
+Days = sam$GA_Days
+Days = scale(Days)
+
+Age = sam$Age
+Age = scale(Age)
+
+Race = sam$Race
+preg = sam$pregnant
+subject = sam[, "Subect_ID"]
+
+y = otu[,1]
+
+f1 = glmm.nb(
+  y ~ Days + Age + Race + preg + offset(log(N)),
+  random = ~ 1 | subject
+)
+
+summary(f1)
+```
+
+De R-code uit het artikel kon ik grotendeels goed namaken. In de code wordt de NBZIMM package gebruikt om microbiome data te analyseren met een negative binomial mixed model. Dit model kijkt naar de relatie tussen bacterie-hoeveelheid en variabelen zoals leeftijd, zwangerschapsstatus en geslacht, en houdt ook rekening met herhaalde metingen bij dezelfde personen.
+
+Eerst worden de data ingeladen en worden de belangrijkste variabelen geselecteerd, zoals leeftijd, zwangerschap en sequencing data. Daarna wordt met de functie glmm.nb() een statistisch model gemaakt om te onderzoeken of deze factoren invloed hebben op veranderingen in de microbiome samenstelling over tijd.
+De structuur van de code is redelijk duidelijk en logisch opgebouwd. Er staan niet veel comments in de code zelf, maar door de volgorde is het toch goed te volgen wat er gebeurt. Daarom zou ik de leesbaarheid een 4 van de 5 geven.
+Voor het reproduceren van de analyse heb ik de code en data gedownload en in een nieuw R-project gezet. In het begin werkte het niet omdat de NBZIMM package niet meer via CRAN te installeren was voor mijn versie van R. Dit heb ik opgelost door de package via GitHub te installeren met remotes::install_github().
+Daarna kon ik de analyse wel goed uitvoeren en een deel van het model opnieuw draaien. Uiteindelijk werkte alles zonder grote problemen. De reproduceerbaarheid is daarom ook een 4 van de 5, omdat de code en data goed beschikbaar waren, maar je wel wat technische kennis nodig hebt om installatieproblemen op te lossen.
+

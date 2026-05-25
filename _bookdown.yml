@@ -1,0 +1,13 @@
+book_filename: "portfolio"
+output_dir: "_book"
+delete_merged_file: true
+
+rmd_files:
+  - index.Rmd
+  - 1_CV.Rmd
+  - 2_PlanVoorToekomst.Rmd
+  - 3_VrijeRuimte_PaternRecognition_Kleding_mnist.Rmd
+  - 4_DataManagment.Rmd
+  - 5_ReproducibleScience.Rmd
+  - 7_PackageMaken.Rmd
+  - 8_Referenties.Rmd

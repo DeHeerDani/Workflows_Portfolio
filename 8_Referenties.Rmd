@@ -1,0 +1,15 @@
+
+#Introductie van projecticum
+
+In dit projecticum wordt onderzoek gedaan naar de bacterie Leptospira. Leptospira is een spiraalvormige bacterie die leptospirose kan veroorzaken, ook bekend als de ziekte van Weil (Johnson, 1996).
+De bacterie wordt voornamelijk overgedragen via dieren, met name ratten (“LCR - Reizigersadvisering”, n.d.), en komt vooral voor in tropischen en subtropischen gebieden zoals Afrika en Azië. Uitbraken komen vaker voor na periodes van hevige regenval.
+Besmetting vindt meestal plaats via contact met water dat is verontreinigd met urine van besmette dieren (“Divisie Lab: Bepalingenwijzer - Leptospira”, 2024). Symptomen variëren van koorts en hoofdpijn tot ernstigere klachten zoals gelzucht, huiduitslag en hersenvliesontsteking.
+Diagnose kan worden gesteld met behulp van PCR-technieken (“Leptospirose Amsterdam UMC”, 2025). Zonder behandeling kan leptospirose in ongeveer 20% van de gevallen fataal verlopen. In Nederland komt de ziekte zelden voor, met ongeveer dertig gevallen per jaar (“Leptospirose RIVM”, n.d.).
+
+#Referenties 
+
+“Divisie Lab: Bepalingenwijzer - Leptospira.” 2024. https://www.umcutrecht.nl/bepalingenwijzer/leptospira.
+Johnson, Russell C. 1996. “Leptospira.” In Medical Microbiology, edited by Samuel Baron, 4th ed. Galveston (TX): University of Texas Medical Branch at Galveston.
+“LCR - Reizigersadvisering.” n.d. https://lcr.nl/infectieziekten/8506. Accessed December 28, 2025.
+“Leptospirose Amsterdam UMC.” 2025. https://www.amsterdamumc.nl/nl/patienteninformatie/leptospirose.htm.
+“Leptospirose RIVM.” n.d. https://www.rivm.nl/leptospirose. Accessed December 29, 2025.
