@@ -1,0 +1,49 @@
+---
+title: "10_Geparametrizeerde_Rmarkdown"
+output: html_document
+params:
+  land: "Austria"
+  jaar: 2022
+  maand: 10
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+covid_data <- read_csv("~/Workflows/Workflows_Portfolio/Opdracht_9_CovidRmarkdown/data.csv")
+```
+
+```{r}
+
+data_filter <- covid_data %>%
+  filter(
+    countriesAndTerritories == params$land,
+    year == params$jaar,
+    month == params$maand
+  )
+```
+
+
+```{r}
+ggplot(data_filter, aes(x = day, y = cases)) +
+  geom_line() +
+  labs(
+    title = paste("COVID-19 cases in", params$land),
+    x = "Day",
+    y = "Cases"
+  )
+```
+
+```{r}
+ggplot(data_filter, aes(x = day, y = deaths)) +
+  geom_line() +
+  labs(
+    title = paste("COVID-19 deaths in", params$land),
+    x = "Day",
+    y = "Deaths"
+  )
+```
+
